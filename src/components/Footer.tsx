@@ -10,14 +10,14 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-4 text-center md:text-left">
             {/* Portrait placeholder — replace src with actual photo */}
-            <img
-              src="/portrait-zsanett.jpg"
-              alt="Bazsó Zsanett"
-              className="w-16 h-16 md:w-20 md:h-20 rounded-xl object-cover border-2 border-primary-foreground/20 shrink-0"
-              onError={(e) => {
-                // Hide if image not found
-                (e.target as HTMLImageElement).style.display = "none";
-              }} />
+            
+
+
+
+
+
+
+
 
             <div>
               <h3 className="font-heading font-bold text-xl mb-1">
