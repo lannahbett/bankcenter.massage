@@ -60,7 +60,14 @@ const Contact = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
           {/* Contact info */}
           <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.7 }} className="space-y-6">
-            <h3 className="font-heading font-semibold text-foreground text-xl mb-6">Bazsó Zsanett</h3>
+            <div className="flex flex-col items-center sm:items-start gap-4 mb-6">
+              <img
+                src="/portrait-zsanett.jpg"
+                alt="Bazsó Zsanett"
+                className="w-20 h-20 md:w-24 md:h-24 rounded-xl object-cover border-2 border-primary/20 shadow-sm"
+              />
+              <h3 className="font-heading font-semibold text-foreground text-xl">Bazsó Zsanett</h3>
+            </div>
             {[
               { icon: Phone, label: t("contactPhoneLabel"), value: "+36 20 924 96 60 / +36 20 507 75 16", href: "tel:+36209249660" },
               { icon: Mail, label: t("contactEmailLabel"), value: "bank.center1054@gmail.com", href: "mailto:bank.center1054@gmail.com" },
