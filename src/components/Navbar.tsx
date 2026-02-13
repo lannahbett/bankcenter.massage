@@ -1,18 +1,26 @@
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Globe } from "lucide-react";
 import { useI18n, Lang } from "@/lib/i18n";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-const langs: { code: Lang; label: string }[] = [
-  { code: "hu", label: "HU" },
-  { code: "en", label: "EN" },
-  { code: "pt", label: "PT" },
-  { code: "es", label: "ES" },
+const langs: { code: Lang; label: string; full: string }[] = [
+  { code: "hu", label: "HU", full: "Magyar" },
+  { code: "en", label: "EN", full: "English" },
+  { code: "pt", label: "PT", full: "Português" },
+  { code: "es", label: "ES", full: "Español" },
 ];
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { lang, setLang, t } = useI18n();
+
+  const currentLang = langs.find((l) => l.code === lang) ?? langs[0];
 
   const links = [
     { href: "#rolam", label: t("navAbout") },
@@ -25,6 +33,28 @@ const Navbar = () => {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const LangDropdown = ({ compact = false }: { compact?: boolean }) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-primary-foreground/80 hover:text-primary-foreground font-body text-sm font-medium transition-colors focus:outline-none">
+        <Globe className={compact ? "w-4 h-4" : "w-4 h-4"} />
+        <span className="text-xs font-semibold">{currentLang.label}</span>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="bg-popover border border-border min-w-[160px]">
+        {langs.map((l) => (
+          <DropdownMenuItem
+            key={l.code}
+            onClick={() => setLang(l.code)}
+            className={`cursor-pointer font-body text-sm ${
+              lang === l.code ? "font-bold text-accent-foreground bg-accent" : ""
+            }`}
+          >
+            {l.label} – {l.full}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 
   return (
     <nav
@@ -56,43 +86,12 @@ const Navbar = () => {
           >
             {t("navCta")}
           </a>
-
-          {/* Language selector */}
-          <div className="flex items-center gap-1 ml-2">
-            {langs.map((l) => (
-              <button
-                key={l.code}
-                onClick={() => setLang(l.code)}
-                className={`px-2 py-1 rounded text-xs font-body font-semibold transition-colors ${
-                  lang === l.code
-                    ? "bg-accent text-accent-foreground"
-                    : "text-primary-foreground/60 hover:text-primary-foreground"
-                }`}
-              >
-                {l.label}
-              </button>
-            ))}
-          </div>
+          <LangDropdown />
         </div>
 
         {/* Mobile toggle */}
         <div className="md:hidden flex items-center gap-3">
-          {/* Mobile language selector */}
-          <div className="flex items-center gap-0.5">
-            {langs.map((l) => (
-              <button
-                key={l.code}
-                onClick={() => setLang(l.code)}
-                className={`px-1.5 py-0.5 rounded text-[10px] font-body font-semibold transition-colors ${
-                  lang === l.code
-                    ? "bg-accent text-accent-foreground"
-                    : "text-primary-foreground/60 hover:text-primary-foreground"
-                }`}
-              >
-                {l.label}
-              </button>
-            ))}
-          </div>
+          <LangDropdown compact />
           <button
             className="text-primary-foreground"
             onClick={() => setMobileOpen(!mobileOpen)}
