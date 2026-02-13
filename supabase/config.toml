@@ -1,1 +1,4 @@
 project_id = "npdjrknprnscavkpegfo"
+
+[functions.submit-to-fillout]
+verify_jwt = false

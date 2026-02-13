@@ -2,11 +2,13 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, Instagram, Send } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 const Contact = () => {
   const { t, lang } = useI18n();
@@ -25,21 +27,31 @@ const Contact = () => {
     if (!form.message.trim()) { toast({ title: t("contactMessageReq"), variant: "destructive" }); return; }
 
     setLoading(true);
-    const { error } = await supabase.from("contact_messages").insert({
-      name: form.name.trim(),
-      email: form.email.trim(),
-      phone: form.phone.trim() || null,
-      preferred_datetime: form.dateTime.trim() || null,
-      message: form.message.trim(),
-      language: lang,
-    });
-    setLoading(false);
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/submit-to-fillout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          email: form.email.trim(),
+          phone: form.phone.trim() || null,
+          preferredDatetime: form.dateTime.trim() || null,
+          message: form.message.trim(),
+          language: lang,
+        }),
+      });
 
-    if (error) {
-      toast({ title: t("contactError"), variant: "destructive" });
-    } else {
+      if (!res.ok) throw new Error("Submit failed");
+
       toast({ title: t("contactSuccess"), description: t("contactSuccessDesc") });
       setForm({ name: "", email: "", phone: "", dateTime: "", message: "" });
+    } catch {
+      toast({ title: t("contactError"), variant: "destructive" });
+    } finally {
+      setLoading(false);
     }
   };
 
