@@ -26,27 +26,14 @@ const Contact = () => {
     if (!validate()) return;
     setSubmitting(true);
     try {
-      // Insert into database
-      const { error: dbError } = await supabase.from("contact_messages").insert({
+      // Save message to database only — no external email provider needed
+      const { error } = await supabase.from("contact_messages").insert({
         name: form.name.trim(),
         email: form.email.trim(),
         phone: form.phone.trim() || null,
         preferred_datetime: form.dateTime.trim() || null,
         message: form.message.trim(),
         language: lang,
-      });
-      if (dbError) console.error("DB insert error:", dbError);
-
-      // Send email via edge function
-      const { error } = await supabase.functions.invoke("send-contact-email", {
-        body: {
-          name: form.name.trim(),
-          email: form.email.trim(),
-          phone: form.phone.trim(),
-          dateTime: form.dateTime.trim(),
-          message: form.message.trim(),
-          language: lang,
-        },
       });
       if (error) throw error;
       toast({ title: t("contactSuccess"), description: t("contactSuccessDesc") });
