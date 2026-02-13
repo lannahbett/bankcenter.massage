@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
   const { toast } = useToast();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [form, setForm] = useState({ name: "", email: "", phone: "", dateTime: "", message: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -26,13 +26,26 @@ const Contact = () => {
     if (!validate()) return;
     setSubmitting(true);
     try {
-      const { data, error } = await supabase.functions.invoke("send-contact-email", {
+      // Insert into database
+      const { error: dbError } = await supabase.from("contact_messages").insert({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim() || null,
+        preferred_datetime: form.dateTime.trim() || null,
+        message: form.message.trim(),
+        language: lang,
+      });
+      if (dbError) console.error("DB insert error:", dbError);
+
+      // Send email via edge function
+      const { error } = await supabase.functions.invoke("send-contact-email", {
         body: {
           name: form.name.trim(),
           email: form.email.trim(),
           phone: form.phone.trim(),
           dateTime: form.dateTime.trim(),
           message: form.message.trim(),
+          language: lang,
         },
       });
       if (error) throw error;
