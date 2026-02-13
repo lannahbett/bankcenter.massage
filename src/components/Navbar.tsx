@@ -1,15 +1,24 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import { useI18n, Lang } from "@/lib/i18n";
 
-const links = [
-  { href: "#rolam", label: "Rólam" },
-  { href: "#szolgaltatasok", label: "Szolgáltatások" },
-  { href: "#kapcsolat", label: "Kapcsolat" },
+const langs: { code: Lang; label: string }[] = [
+  { code: "hu", label: "HU" },
+  { code: "en", label: "EN" },
+  { code: "pt", label: "PT" },
+  { code: "es", label: "ES" },
 ];
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { lang, setLang, t } = useI18n();
+
+  const links = [
+    { href: "#rolam", label: t("navAbout") },
+    { href: "#szolgaltatasok", label: t("navServices") },
+    { href: "#kapcsolat", label: t("navContact") },
+  ];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -45,18 +54,53 @@ const Navbar = () => {
             href="#kapcsolat"
             className="px-5 py-2.5 rounded-lg bg-accent text-accent-foreground font-body font-semibold text-sm shadow hover:shadow-md transition-all"
           >
-            Időpontfoglalás
+            {t("navCta")}
           </a>
+
+          {/* Language selector */}
+          <div className="flex items-center gap-1 ml-2">
+            {langs.map((l) => (
+              <button
+                key={l.code}
+                onClick={() => setLang(l.code)}
+                className={`px-2 py-1 rounded text-xs font-body font-semibold transition-colors ${
+                  lang === l.code
+                    ? "bg-accent text-accent-foreground"
+                    : "text-primary-foreground/60 hover:text-primary-foreground"
+                }`}
+              >
+                {l.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Mobile toggle */}
-        <button
-          className="md:hidden text-primary-foreground"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Menü"
-        >
-          {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        <div className="md:hidden flex items-center gap-3">
+          {/* Mobile language selector */}
+          <div className="flex items-center gap-0.5">
+            {langs.map((l) => (
+              <button
+                key={l.code}
+                onClick={() => setLang(l.code)}
+                className={`px-1.5 py-0.5 rounded text-[10px] font-body font-semibold transition-colors ${
+                  lang === l.code
+                    ? "bg-accent text-accent-foreground"
+                    : "text-primary-foreground/60 hover:text-primary-foreground"
+                }`}
+              >
+                {l.label}
+              </button>
+            ))}
+          </div>
+          <button
+            className="text-primary-foreground"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Menu"
+          >
+            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
@@ -78,7 +122,7 @@ const Navbar = () => {
               onClick={() => setMobileOpen(false)}
               className="mt-2 px-5 py-3 rounded-lg bg-accent text-accent-foreground font-body font-semibold text-center"
             >
-              Időpontfoglalás
+              {t("navCta")}
             </a>
           </div>
         </div>

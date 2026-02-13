@@ -1,15 +1,28 @@
 import { Phone, Mail, MapPin } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 const Footer = () => {
+  const { t } = useI18n();
+
   return (
     <footer className="bg-green-dark text-primary-foreground py-12">
       <div className="container">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="text-center md:text-left">
-            <h3 className="font-heading font-bold text-xl mb-1">
-              Bazsó Zsanett
-            </h3>
-            <p className="text-primary-foreground/60 text-sm">Gyógymasszázs</p>
+          <div className="flex items-center gap-4 text-center md:text-left">
+            {/* Portrait placeholder — replace src with actual photo */}
+            <img
+              src="/portrait-zsanett.jpg"
+              alt="Bazsó Zsanett"
+              className="w-16 h-16 md:w-20 md:h-20 rounded-xl object-cover border-2 border-primary-foreground/20 shrink-0"
+              onError={(e) => {
+                // Hide if image not found
+                (e.target as HTMLImageElement).style.display = "none";
+              }}
+            />
+            <div>
+              <h3 className="font-heading font-bold text-xl mb-1">Bazsó Zsanett</h3>
+              <p className="text-primary-foreground/60 text-sm">{t("footerRole")}</p>
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-6 text-sm text-primary-foreground/70">
@@ -29,10 +42,8 @@ const Footer = () => {
         </div>
 
         <div className="mt-8 pt-6 border-t border-primary-foreground/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-primary-foreground/40">
-          <p>© {new Date().getFullYear()} Bazsó Zsanett – Gyógymasszázs. Minden jog fenntartva.</p>
-          <a href="#" className="hover:text-primary-foreground/60 transition-colors">
-            Adatkezelési tájékoztató
-          </a>
+          <p>© {new Date().getFullYear()} Bazsó Zsanett – {t("footerRole")}. {t("footerCopyright")}</p>
+          <a href="#" className="hover:text-primary-foreground/60 transition-colors">{t("footerPrivacy")}</a>
         </div>
       </div>
     </footer>
