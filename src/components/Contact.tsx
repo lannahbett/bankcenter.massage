@@ -64,7 +64,7 @@ const Contact = () => {
               <img
                 src="/portrait-zsanett.jpg"
                 alt="Bazsó Zsanett"
-                className="w-20 h-20 md:w-24 md:h-24 rounded-xl object-cover border-2 border-primary/20 shadow-sm"
+                className="w-28 h-28 md:w-32 md:h-32 rounded-xl object-cover border-2 border-primary/20 shadow-sm"
               />
               <h3 className="font-heading font-semibold text-foreground text-xl">Bazsó Zsanett</h3>
             </div>
