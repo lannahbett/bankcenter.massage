@@ -17,11 +17,12 @@ const Footer = () => {
               onError={(e) => {
                 // Hide if image not found
                 (e.target as HTMLImageElement).style.display = "none";
-              }}
-            />
+              }} />
+
             <div>
-              <h3 className="font-heading font-bold text-xl mb-1">Bazsó Zsanett</h3>
-              <p className="text-primary-foreground/60 text-sm">{t("footerRole")}</p>
+              <h3 className="font-heading font-bold text-xl mb-1">
+              </h3>
+              
             </div>
           </div>
 
@@ -46,8 +47,7 @@ const Footer = () => {
           <a href="#" className="hover:text-primary-foreground/60 transition-colors">{t("footerPrivacy")}</a>
         </div>
       </div>
-    </footer>
-  );
+    </footer>);
 };
 
 export default Footer;
