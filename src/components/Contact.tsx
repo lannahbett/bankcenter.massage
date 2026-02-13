@@ -15,6 +15,8 @@ const Contact = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", dateTime: "", message: "" });
+  const [honeypot, setHoneypot] = useState("");
+  const [formLoadTime] = useState(Date.now());
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -34,13 +36,15 @@ const Contact = () => {
           "Content-Type": "application/json",
           apikey: SUPABASE_ANON_KEY,
         },
-        body: JSON.stringify({
+         body: JSON.stringify({
           name: form.name.trim(),
           email: form.email.trim(),
           phone: form.phone.trim() || null,
           preferredDatetime: form.dateTime.trim() || null,
           message: form.message.trim(),
           language: lang,
+          _hp: honeypot,
+          _t: formLoadTime,
         }),
       });
 
@@ -96,6 +100,10 @@ const Contact = () => {
           {/* Contact form */}
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.7 }}>
             <form onSubmit={handleSubmit} className="bg-card rounded-xl border border-border shadow-sm p-6 md:p-8 space-y-5">
+              {/* Honeypot field - hidden from real users */}
+              <div className="absolute opacity-0 pointer-events-none" aria-hidden="true" tabIndex={-1}>
+                <input type="text" name="_hp" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} tabIndex={-1} autoComplete="off" />
+              </div>
               <div>
                 <label className="text-sm font-medium text-foreground mb-1.5 block">{t("contactName")} *</label>
                 <Input name="name" value={form.name} onChange={handleChange} placeholder={t("contactNamePh")} />

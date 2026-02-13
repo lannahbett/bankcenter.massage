@@ -45,12 +45,61 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { name, email, phone, preferredDatetime, message, language } = await req.json();
+    const body = await req.json();
+    const name = typeof body.name === "string" ? body.name.trim() : "";
+    const email = typeof body.email === "string" ? body.email.trim() : "";
+    const phone = typeof body.phone === "string" ? body.phone.trim() : "";
+    const preferredDatetime = typeof body.preferredDatetime === "string" ? body.preferredDatetime.trim() : "";
+    const message = typeof body.message === "string" ? body.message.trim() : "";
+    const language = typeof body.language === "string" ? body.language.trim() : "";
+    const honeypot = body._hp;
+    const submitTime = typeof body._t === "number" ? body._t : 0;
 
-    if (!name || !email || !message) {
-      return new Response(JSON.stringify({ error: "Missing required fields" }), {
-        status: 400,
+    // Bot protection: reject if honeypot filled or submitted too fast (<3s)
+    if (honeypot) {
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (submitTime && Date.now() - submitTime < 3000) {
+      return new Response(JSON.stringify({ error: "Please wait before submitting" }), {
+        status: 429,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Input validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!name || name.length > 100) {
+      return new Response(JSON.stringify({ error: "Invalid name" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (!email || !emailRegex.test(email) || email.length > 254) {
+      return new Response(JSON.stringify({ error: "Invalid email" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (phone && phone.length > 30) {
+      return new Response(JSON.stringify({ error: "Invalid phone" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (!message || message.length > 5000) {
+      return new Response(JSON.stringify({ error: "Invalid message" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (preferredDatetime && preferredDatetime.length > 100) {
+      return new Response(JSON.stringify({ error: "Invalid date/time" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const validLangs = ["hu", "en", "pt", "es", ""];
+    if (!validLangs.includes(language)) {
+      return new Response(JSON.stringify({ error: "Invalid language" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
