@@ -1,9 +1,47 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Phone, Mail, MapPin, Instagram } from "lucide-react";
+import { Phone, Mail, MapPin, Instagram, Send } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 const Contact = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({ name: "", email: "", phone: "", dateTime: "", message: "" });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name.trim()) { toast({ title: t("contactNameReq"), variant: "destructive" }); return; }
+    if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email)) { toast({ title: t("contactEmailReq"), variant: "destructive" }); return; }
+    if (!form.message.trim()) { toast({ title: t("contactMessageReq"), variant: "destructive" }); return; }
+
+    setLoading(true);
+    const { error } = await supabase.from("contact_messages").insert({
+      name: form.name.trim(),
+      email: form.email.trim(),
+      phone: form.phone.trim() || null,
+      preferred_datetime: form.dateTime.trim() || null,
+      message: form.message.trim(),
+      language: lang,
+    });
+    setLoading(false);
+
+    if (error) {
+      toast({ title: t("contactError"), variant: "destructive" });
+    } else {
+      toast({ title: t("contactSuccess"), description: t("contactSuccessDesc") });
+      setForm({ name: "", email: "", phone: "", dateTime: "", message: "" });
+    }
+  };
 
   return (
     <section id="kapcsolat" className="py-20 md:py-28 bg-section-alt">
@@ -43,15 +81,34 @@ const Contact = () => {
             ))}
           </motion.div>
 
-          {/* Fillout embedded form */}
-          <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.7 }} className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-            <iframe
-              src="https://forms.fillout.com/t/t5gEJM6xFDus"
-              title="Contact Form"
-              className="w-full border-0"
-              style={{ height: 600 }}
-              allow="clipboard-write"
-            />
+          {/* Contact form */}
+          <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.7 }}>
+            <form onSubmit={handleSubmit} className="bg-card rounded-xl border border-border shadow-sm p-6 md:p-8 space-y-5">
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">{t("contactName")} *</label>
+                <Input name="name" value={form.name} onChange={handleChange} placeholder={t("contactNamePh")} />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">{t("contactEmail")} *</label>
+                <Input name="email" type="email" value={form.email} onChange={handleChange} placeholder={t("contactEmailPh")} />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">{t("contactPhone")}</label>
+                <Input name="phone" value={form.phone} onChange={handleChange} placeholder={t("contactPhonePh")} />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">{t("contactDateTime")}</label>
+                <Input name="dateTime" value={form.dateTime} onChange={handleChange} placeholder={t("contactDateTimePh")} />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">{t("contactMessage")} *</label>
+                <Textarea name="message" value={form.message} onChange={handleChange} placeholder={t("contactMessagePh")} rows={4} />
+              </div>
+              <Button type="submit" disabled={loading} className="w-full gap-2">
+                <Send className="w-4 h-4" />
+                {loading ? "..." : t("contactSubmit")}
+              </Button>
+            </form>
           </motion.div>
         </div>
       </div>
