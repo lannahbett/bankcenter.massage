@@ -1,5 +1,3 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -12,7 +10,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { name, email, phone, dateTime, message } = await req.json();
+    const { name, email, phone, dateTime, message, language } = await req.json();
 
     // Validate required fields
     if (!name || typeof name !== "string" || name.trim().length === 0) {
@@ -50,6 +48,7 @@ Név / Name: ${name.trim()}
 E-mail: ${email.trim()}
 Telefon / Phone: ${phone?.trim() || "Nem adott meg / Not provided"}
 Kívánt időpont / Preferred date-time: ${dateTime?.trim() || "Nem adott meg / Not provided"}
+Nyelv / Language: ${language || "hu"}
 
 Üzenet / Message:
 ${message.trim()}
