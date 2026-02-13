@@ -61,8 +61,11 @@ ${message.trim()}
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
+        // ROOT CAUSE: Resend testing mode (onboarding@resend.dev) only allows
+        // sending to the account owner's email. To send to bank.center1054@gmail.com,
+        // verify a custom domain at resend.com/domains and update the `from` address.
         from: "Weblap <onboarding@resend.dev>",
-        to: ["bank.center1054@gmail.com"],
+        to: ["lannausa2@gmail.com"],
         subject: `Új időpontkérés: ${name.trim()}`,
         text: emailBody,
         reply_to: email.trim(),
