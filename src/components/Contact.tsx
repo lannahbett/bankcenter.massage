@@ -1,52 +1,9 @@
 import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, Instagram } from "lucide-react";
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { useI18n } from "@/lib/i18n";
-import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
-  const { toast } = useToast();
-  const { t, lang } = useI18n();
-  const [form, setForm] = useState({ name: "", email: "", phone: "", dateTime: "", message: "" });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [submitting, setSubmitting] = useState(false);
-
-  const validate = () => {
-    const e: Record<string, string> = {};
-    if (!form.name.trim()) e.name = t("contactNameReq");
-    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = t("contactEmailReq");
-    if (!form.message.trim()) e.message = t("contactMessageReq");
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validate()) return;
-    setSubmitting(true);
-    try {
-      // Save message to database only — no external email provider needed
-      const { error } = await supabase.from("contact_messages").insert({
-        name: form.name.trim(),
-        email: form.email.trim(),
-        phone: form.phone.trim() || null,
-        preferred_datetime: form.dateTime.trim() || null,
-        message: form.message.trim(),
-        language: lang,
-      });
-      if (error) throw error;
-      toast({ title: t("contactSuccess"), description: t("contactSuccessDesc") });
-      setForm({ name: "", email: "", phone: "", dateTime: "", message: "" });
-      setErrors({});
-    } catch {
-      toast({ title: t("contactError"), variant: "destructive" });
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const inputClass = "w-full px-4 py-3 rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 transition";
+  const { t } = useI18n();
 
   return (
     <section id="kapcsolat" className="py-20 md:py-28 bg-section-alt">
@@ -86,35 +43,16 @@ const Contact = () => {
             ))}
           </motion.div>
 
-          {/* Form */}
-          <motion.form initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.7 }} onSubmit={handleSubmit} className="space-y-5 bg-card p-8 rounded-xl border border-border shadow-sm" noValidate>
-            <div>
-              <label className="block text-sm font-body font-medium text-foreground mb-1.5">{t("contactName")}</label>
-              <input type="text" required maxLength={100} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputClass} placeholder={t("contactNamePh")} />
-              {errors.name && <p className="text-destructive text-xs mt-1">{errors.name}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-body font-medium text-foreground mb-1.5">{t("contactEmail")}</label>
-              <input type="email" required maxLength={255} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={inputClass} placeholder={t("contactEmailPh")} />
-              {errors.email && <p className="text-destructive text-xs mt-1">{errors.email}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-body font-medium text-foreground mb-1.5">{t("contactPhone")}</label>
-              <input type="tel" maxLength={20} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={inputClass} placeholder={t("contactPhonePh")} />
-            </div>
-            <div>
-              <label className="block text-sm font-body font-medium text-foreground mb-1.5">{t("contactDateTime")}</label>
-              <input type="text" maxLength={100} value={form.dateTime} onChange={(e) => setForm({ ...form, dateTime: e.target.value })} className={inputClass} placeholder={t("contactDateTimePh")} />
-            </div>
-            <div>
-              <label className="block text-sm font-body font-medium text-foreground mb-1.5">{t("contactMessage")}</label>
-              <textarea required maxLength={1000} rows={4} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className={`${inputClass} resize-none`} placeholder={t("contactMessagePh")} />
-              {errors.message && <p className="text-destructive text-xs mt-1">{errors.message}</p>}
-            </div>
-            <button type="submit" disabled={submitting} className="w-full px-8 py-4 rounded-lg bg-accent text-accent-foreground font-body font-semibold text-lg shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed">
-              {submitting ? "..." : t("contactSubmit")}
-            </button>
-          </motion.form>
+          {/* Fillout embedded form */}
+          <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.7 }} className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+            <iframe
+              src="https://forms.fillout.com/t/t5gEJM6xFDus"
+              title="Contact Form"
+              className="w-full border-0"
+              style={{ height: 600 }}
+              allow="clipboard-write"
+            />
+          </motion.div>
         </div>
       </div>
     </section>
