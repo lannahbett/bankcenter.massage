@@ -76,6 +76,7 @@ const translations = {
     footerRole: "Gyógymasszázs",
     footerCopyright: "Minden jog fenntartva.",
     footerPrivacy: "Adatkezelési tájékoztató",
+    footerTerms: "Általános Szerződési Feltételek",
   },
   en: {
     navAbout: "About",
