@@ -300,8 +300,11 @@ const VALID: Lang[] = ["hu", "en", "pt", "es"];
 const getInitialLang = (): Lang => {
   if (typeof window === "undefined") return "hu";
   const stored = window.localStorage.getItem(STORAGE_KEY) as Lang | null;
-  if (stored && VALID.includes(stored)) return stored;
-  return "hu";
+  const initial = stored && VALID.includes(stored) ? stored : "hu";
+  if (typeof document !== "undefined") {
+    document.documentElement.lang = initial;
+  }
+  return initial;
 };
 
 export const I18nProvider = ({ children }: { children: ReactNode }) => {
