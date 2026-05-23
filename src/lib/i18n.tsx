@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 export type Lang = "hu" | "en" | "pt" | "es";
 
@@ -294,8 +294,34 @@ const I18nContext = createContext<I18nContextType>({
   t: (key) => key,
 });
 
+const STORAGE_KEY = "bcm_lang";
+const VALID: Lang[] = ["hu", "en", "pt", "es"];
+
+const getInitialLang = (): Lang => {
+  if (typeof window === "undefined") return "hu";
+  const stored = window.localStorage.getItem(STORAGE_KEY) as Lang | null;
+  if (stored && VALID.includes(stored)) return stored;
+  return "hu";
+};
+
 export const I18nProvider = ({ children }: { children: ReactNode }) => {
-  const [lang, setLang] = useState<Lang>("hu");
+  const [lang, setLangState] = useState<Lang>(getInitialLang);
+
+  const setLang = (next: Lang) => {
+    setLangState(next);
+    try {
+      window.localStorage.setItem(STORAGE_KEY, next);
+    } catch {
+      /* ignore */
+    }
+  };
+
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.lang = lang;
+    }
+  }, [lang]);
+
   const t = (key: TranslationKey) => translations[lang][key] || translations.hu[key] || key;
   return (
     <I18nContext.Provider value={{ lang, setLang, t }}>
