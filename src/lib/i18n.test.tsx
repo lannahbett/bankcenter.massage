@@ -84,21 +84,20 @@ describe("i18n language switching", () => {
       window.localStorage.setItem(STORAGE_KEY, lang);
       renderIndex();
 
-      // Every sampled string is present (at least once)
+      // Every sampled string is present (at least once). Use a substring
+      // matcher so strings split across child nodes still match.
+      const bodyText = document.body.textContent ?? "";
       for (const text of samples[lang]) {
-        expect(
-          screen.getAllByText(text).length,
-          `expected "${text}" in ${lang}`
-        ).toBeGreaterThan(0);
+        expect(bodyText.includes(text), `expected "${text}" in ${lang}`).toBe(true);
       }
 
       // No leakage from other languages
       for (const other of Object.keys(uniqueMarkers) as Lang[]) {
         if (other === lang) continue;
         expect(
-          screen.queryByText(uniqueMarkers[other]),
+          bodyText.includes(uniqueMarkers[other]),
           `${uniqueMarkers[other]} should NOT appear when lang=${lang}`
-        ).toBeNull();
+        ).toBe(false);
       }
 
       const expectedHtmlLang = lang === "pt" ? "pt-BR" : lang;
@@ -109,12 +108,12 @@ describe("i18n language switching", () => {
   it("persists language across remount (simulated reload)", () => {
     window.localStorage.setItem(STORAGE_KEY, "es");
     const { unmount } = renderIndex();
-    expect(screen.getAllByText("¿Por qué elegirme?").length).toBeGreaterThan(0);
+    expect(document.body.textContent ?? "").toContain("¿Por qué elegirme?");
     unmount();
 
     // Fresh mount — should still be Spanish
     renderIndex();
-    expect(screen.getAllByText("¿Por qué elegirme?").length).toBeGreaterThan(0);
+    expect(document.body.textContent ?? "").toContain("¿Por qué elegirme?");
     expect(document.documentElement.lang).toBe("es");
   });
 });
