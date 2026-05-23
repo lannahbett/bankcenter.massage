@@ -11,7 +11,7 @@ import {
 const langs: { code: Lang; label: string; full: string }[] = [
   { code: "hu", label: "HU", full: "Magyar" },
   { code: "en", label: "EN", full: "English" },
-  { code: "pt", label: "PT", full: "Português" },
+  { code: "pt", label: "PT", full: "Português (BR)" },
   { code: "es", label: "ES", full: "Español" },
 ];
 
