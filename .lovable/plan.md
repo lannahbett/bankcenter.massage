@@ -1,42 +1,40 @@
-## Problem
+## Root cause
 
-I tested the site in the browser: clicking HU → EN does change every visible string correctly. The most likely cause of "languages don't show properly" is that:
+The site already switches languages correctly in React state. The garbled rendering in the screenshots is caused by Chrome's built-in page translator running on top of our own i18n:
 
-1. The selected language is kept only in React state, so a page reload (or opening a fresh tab / sharing a link) resets it back to Hungarian.
-2. The `<html lang>` attribute always stays `lang="en"` (from `index.html`) regardless of the chosen language, which can confuse browser translation, screen readers, and SEO.
+- Hero screenshot (ES): the Spanish copy shows words like "necessitate", "relaxation", "gestion" that are **not** in our `es` dictionary — those are Chrome's machine translation of the English source. The gold "heroExtra" line is even left in English because Chrome translates blocks heuristically. The nav label shows "AND" because Chrome translated the Spanish abbreviation `ES` ("es" = "is") into English, then through another locale into "AND".
+- Services screenshot (PT): headings stay in English while one card body is partly in Portuguese — again, Chrome translating selectively because `<html lang>` does not match the rendered language at first paint.
+
+Our own i18n is working; Chrome is fighting it.
 
 ## Plan
 
-### 1. Persist the language choice
-In `src/lib/i18n.tsx`:
-- Initialize `lang` from `localStorage` (`bcm_lang`) if present and valid, otherwise fall back to `"hu"`.
-- On `setLang`, write the value back to `localStorage`.
-- Update `<html lang="…">` whenever the language changes (via `useEffect`) so HTML metadata matches the visible language.
+### 1. Disable Chrome / browser auto-translation
 
-### 2. QA all four languages in the live preview
-Using the browser tool, switch through HU → EN → PT → ES and verify each language renders correctly across:
-- Navbar (links + CTA + language label)
-- Hero (title, subtitle, extra line, both CTAs)
-- About (tag, title, body, 3 cards)
-- Services (tag, title, 5 service cards + CTA)
-- Benefits (tag, title, 4 benefit lines)
-- Contact (tag, title, sub, all field labels + placeholders, submit button)
-- Footer (role + copyright + privacy)
+In `index.html`:
+- Add `<meta name="google" content="notranslate" />` in `<head>`.
+- Add `translate="no"` and `class="notranslate"` on `<body>` so every descendant inherits "do not translate".
 
-Also verify after the persistence fix:
-- Selected language survives a full page reload.
-- `<html lang>` updates to the chosen code.
+This is the documented way to tell Chrome (and other browsers) that the page already handles localization.
 
-### 3. Light functional QA (no code changes expected)
-- Hero "Foglalj időpontot / Book / Marcar / Reservar" anchor scrolls to `#kapcsolat`.
-- "Szolgáltatások / Services" anchor scrolls to `#szolgaltatasok`.
-- Navbar mobile menu opens/closes at the current 574px viewport.
-- Contact form client-side validation triggers required-field toasts when submitted empty.
-  (I will NOT submit a real message to the edge function during QA to avoid sending a real lead.)
+### 2. Make initial `<html lang>` correct on first paint
 
-If any string is missing or mistranslated in a specific language during QA, fix it in `src/lib/i18n.tsx` only.
+In `src/lib/i18n.tsx`, when `getInitialLang()` resolves the stored / default language, also set `document.documentElement.lang` synchronously (before React renders), so the first paint already has the right `lang` attribute and Chrome never offers to translate.
+
+### 3. Keep the language switcher labels stable
+
+Add `translate="no"` to the language code span in `src/components/Navbar.tsx` (`HU / EN / PT / ES`) as a belt-and-braces guard so the abbreviation can never be re-translated even if a user manually invokes Translate.
+
+### 4. QA in the live preview
+
+- Reload the site, confirm no "Translate this page?" prompt and that:
+  - HU → all Hungarian, no English leftovers.
+  - EN → all English.
+  - PT → all Portuguese (no English headings, no Spanish words).
+  - ES → all Spanish (no "relaxation", no "AND" label, gold subline in Spanish).
+- Verify the choice still persists across reload and `<html lang>` updates to the chosen code.
 
 ## Scope / non-goals
 
-- No changes to backend, edge function, RLS, or contact-form business logic.
-- No new languages, no routing-based locales, no design changes.
+- No backend, RLS, edge function, routing, or design changes.
+- No new translations added; existing dictionaries already cover all visible strings.
