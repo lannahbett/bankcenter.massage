@@ -281,6 +281,7 @@ const translations = {
     footerRole: "Masaje Terapéutico",
     footerCopyright: "Todos los derechos reservados.",
     footerPrivacy: "Política de privacidad",
+    footerTerms: "Términos de uso",
   },
 } as const;
 
@@ -306,7 +307,7 @@ const getInitialLang = (): Lang => {
   const stored = window.localStorage.getItem(STORAGE_KEY) as Lang | null;
   const initial = stored && VALID.includes(stored) ? stored : "hu";
   if (typeof document !== "undefined") {
-    document.documentElement.lang = initial;
+    document.documentElement.lang = htmlLangFor(initial);
   }
   return initial;
 };
@@ -325,7 +326,7 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (typeof document !== "undefined") {
-      document.documentElement.lang = lang;
+      document.documentElement.lang = htmlLangFor(lang);
     }
   }, [lang]);
 
