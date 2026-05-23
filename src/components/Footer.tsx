@@ -1,4 +1,5 @@
 import { Phone, Mail, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 
 const Footer = () => {
@@ -44,7 +45,10 @@ const Footer = () => {
 
         <div className="mt-8 pt-6 border-t border-primary-foreground/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-primary-foreground/40">
           <p>© {new Date().getFullYear()} Bazsó Zsanett – {t("footerRole")}. {t("footerCopyright")}</p>
-          <a href="#" className="hover:text-primary-foreground/60 transition-colors">{t("footerPrivacy")}</a>
+          <div className="flex gap-4">
+            <Link to="/privacy" className="hover:text-primary-foreground/60 transition-colors">{t("footerPrivacy")}</Link>
+            <Link to="/terms" className="hover:text-primary-foreground/60 transition-colors">{t("footerTerms")}</Link>
+          </div>
         </div>
       </div>
     </footer>);
