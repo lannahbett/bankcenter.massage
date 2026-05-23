@@ -13,3 +13,14 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: () => {},
   }),
 });
+
+class IO {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+  takeRecords() { return []; }
+}
+// @ts-expect-error jsdom polyfill
+window.IntersectionObserver = IO;
+// @ts-expect-error jsdom polyfill
+globalThis.IntersectionObserver = IO;
