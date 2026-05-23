@@ -38,7 +38,7 @@ const Navbar = () => {
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-primary-foreground/80 hover:text-primary-foreground font-body text-sm font-medium transition-colors focus:outline-none">
         <Globe className={compact ? "w-4 h-4" : "w-4 h-4"} />
-        <span className="text-xs font-semibold">{currentLang.label}</span>
+        <span className="text-xs font-semibold notranslate" translate="no">{currentLang.label}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="bg-popover border border-border min-w-[160px]">
         {langs.map((l) => (
