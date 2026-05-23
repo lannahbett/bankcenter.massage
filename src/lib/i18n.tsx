@@ -302,6 +302,9 @@ const I18nContext = createContext<I18nContextType>({
 const STORAGE_KEY = "bcm_lang";
 const VALID: Lang[] = ["hu", "en", "pt", "es"];
 
+const htmlLangFor = (l: Lang): string =>
+  l === "pt" ? "pt-BR" : l;
+
 const getInitialLang = (): Lang => {
   if (typeof window === "undefined") return "hu";
   const stored = window.localStorage.getItem(STORAGE_KEY) as Lang | null;
