@@ -77,6 +77,7 @@ const translations = {
     footerCopyright: "Minden jog fenntartva.",
     footerPrivacy: "Adatkezelési tájékoztató",
     footerTerms: "Általános Szerződési Feltételek",
+    footerCredit: "Céllal készítette",
   },
   en: {
     navAbout: "About",
