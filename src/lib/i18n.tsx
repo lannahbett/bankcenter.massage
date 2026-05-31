@@ -77,6 +77,7 @@ const translations = {
     footerCopyright: "Minden jog fenntartva.",
     footerPrivacy: "Adatkezelési tájékoztató",
     footerTerms: "Általános Szerződési Feltételek",
+    footerCredit: "Céllal készítette",
   },
   en: {
     navAbout: "About",
@@ -145,6 +146,7 @@ const translations = {
     footerCopyright: "All rights reserved.",
     footerPrivacy: "Privacy policy",
     footerTerms: "Terms of use",
+    footerCredit: "Made with purpose by",
   },
   pt: {
     // Brazilian Portuguese (pt-BR)
@@ -214,6 +216,7 @@ const translations = {
     footerCopyright: "Todos os direitos reservados.",
     footerPrivacy: "Política de Privacidade",
     footerTerms: "Termos de Uso",
+    footerCredit: "Feito com propósito por",
   },
   es: {
     navAbout: "Sobre mí",
@@ -282,6 +285,7 @@ const translations = {
     footerCopyright: "Todos los derechos reservados.",
     footerPrivacy: "Política de privacidad",
     footerTerms: "Términos de uso",
+    footerCredit: "Hecho con propósito por",
   },
 } as const;
 

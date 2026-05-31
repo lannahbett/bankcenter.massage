@@ -50,6 +50,18 @@ const Footer = () => {
             <Link to="/terms" className="hover:text-primary-foreground/60 transition-colors">{t("footerTerms")}</Link>
           </div>
         </div>
+
+        <p className="mt-4 text-center text-xs text-primary-foreground/50">
+          {t("footerCredit")}{" "}
+          <a
+            href="https://lannaraportfolio.lovable.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-bold text-purple-400 hover:text-purple-300 transition-colors"
+          >
+            Lannara Silva
+          </a>
+        </p>
       </div>
     </footer>);
 };
